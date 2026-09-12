@@ -32,7 +32,7 @@ export class FirestoreCollection<T extends { id: string }> {
   constructor(collectionName: string, initialData: T[]) {
     this.collectionName = collectionName;
     this.initialData = initialData;
-    this.localKey = `sis_col_${collectionName}`;
+    this.localKey = `sis_v2_${collectionName}`;
   }
 
   // ─── Local cache helpers ───────────────────────────────────────────────────

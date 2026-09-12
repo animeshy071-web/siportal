@@ -23,21 +23,21 @@ export function StudentAttendance() {
     const records = rawAttendance.filter((a: any) => a.subjectId === sub.id || a.subject_id === sub.id);
     const total = records.length;
     const present = records.filter((a: any) => a.status === 'present' || a.status === 'late').length;
-    const percentage = total > 0 ? Math.round((present / total) * 100) : 85;
+    const percentage = total > 0 ? Math.round((present / total) * 100) : 0;
     return {
       subjectId: sub.id,
       subjectName: sub.name,
-      total: total || 20,
-      present: present || 17,
+      total,
+      present,
       percentage
     };
   });
 
   const overall = subjectAttendance.length > 0
     ? Math.round(subjectAttendance.reduce((s: number, a: any) => s + a.percentage, 0) / subjectAttendance.length)
-    : 85;
+    : 0;
 
-  const atRisk = subjectAttendance.filter((sa: any) => sa.percentage < 75);
+  const atRisk = subjectAttendance.filter((sa: any) => sa.total > 0 && sa.percentage < 75);
 
   if (loadingAttendance || loadingSubjects) {
     return (

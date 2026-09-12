@@ -2,38 +2,7 @@ import { Faculty } from '../types';
 import { authService } from './authService';
 import { FirestoreCollection } from './dbHelper';
 
-const INITIAL_FACULTY: Faculty[] = [
-  {
-    id: 'fac-1',
-    name: 'Prof. Suraj Sharma',
-    email: 'suraj@sis.edu',
-    phone: '+91 98111 22233',
-    department: 'Computer Science',
-    designation: 'Associate Professor',
-    experience: '8 Years',
-    subjects: ['Data Structures', 'Algorithms', 'Operating Systems'],
-  },
-  {
-    id: 'fac-2',
-    name: 'Dr. Priya Mehta',
-    email: 'priya@sis.edu',
-    phone: '+91 98222 33344',
-    department: 'Computer Science',
-    designation: 'Professor & HOD',
-    experience: '15 Years',
-    subjects: ['Database Management', 'Cloud Computing'],
-  },
-  {
-    id: 'fac-3',
-    name: 'Prof. Rajesh Verma',
-    email: 'rajesh@sis.edu',
-    phone: '+91 98333 44455',
-    department: 'Information Technology',
-    designation: 'Assistant Professor',
-    experience: '5 Years',
-    subjects: ['Computer Networks', 'Cyber Security'],
-  },
-];
+const INITIAL_FACULTY: Faculty[] = [];
 
 const collectionStore = new FirestoreCollection<Faculty>('faculty', INITIAL_FACULTY);
 

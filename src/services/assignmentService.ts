@@ -2,45 +2,7 @@ import { Assignment, Submission } from '../types';
 import { storageService } from './storageService';
 import { FirestoreCollection } from './dbHelper';
 
-const INITIAL_ASSIGNMENTS: Assignment[] = [
-  {
-    id: 'asg-1',
-    title: 'AVL Trees & Red-Black Trees Implementation',
-    subjectId: 'sub-1',
-    subjectName: 'Data Structures & Algorithms',
-    facultyId: 'fac-1',
-    facultyName: 'Prof. Suraj Sharma',
-    dueDate: '2026-08-25',
-    maxMarks: 100,
-    description: 'Implement self-balancing binary search trees (AVL and Red-Black) in C++ with rotation operations and test insertion and deletion benchmarking.',
-    status: 'pending',
-  },
-  {
-    id: 'asg-2',
-    title: 'Normalization & ER Diagram Project',
-    subjectId: 'sub-2',
-    subjectName: 'Database Management Systems',
-    facultyId: 'fac-2',
-    facultyName: 'Dr. Priya Mehta',
-    dueDate: '2026-08-30',
-    maxMarks: 50,
-    description: 'Design a normalized (BCNF) relational schema for a hospital management system and write complex SQL queries with stored procedures.',
-    status: 'pending',
-  },
-  {
-    id: 'asg-3',
-    title: 'TCP/IP Socket Programming Lab',
-    subjectId: 'sub-3',
-    subjectName: 'Computer Networks',
-    facultyId: 'fac-3',
-    facultyName: 'Prof. Rajesh Verma',
-    dueDate: '2026-09-05',
-    maxMarks: 50,
-    description: 'Write a multi-client concurrent chat server using select() or epoll() socket API in Python/C.',
-    status: 'pending',
-  },
-];
-
+const INITIAL_ASSIGNMENTS: Assignment[] = [];
 const INITIAL_SUBMISSIONS: Submission[] = [];
 
 const assignmentStore = new FirestoreCollection<Assignment>('assignments', INITIAL_ASSIGNMENTS);

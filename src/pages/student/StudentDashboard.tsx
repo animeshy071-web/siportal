@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { operationService } from '../../services/operationService';
 import { assignmentService } from '../../services/assignmentService';
 import { academicService } from '../../services/academicService';
+import { attendanceService } from '../../services/attendanceService';
 import { useAuth } from '../../hooks/useAuth';
 import { DashboardCard } from '../../components/DashboardCard';
 import { StatusBadge } from '../../components/StatusBadge';
@@ -35,10 +36,17 @@ export function StudentDashboard() {
     queryFn: () => operationService.getFees(user?.id)
   });
 
+  const { data: attendance = [] } = useQuery({
+    queryKey: ['studentAttendance', user?.id],
+    queryFn: () => attendanceService.getAttendance(user?.id)
+  });
+
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
   const todaySlots = timetable.filter((t: any) => t.day === today);
 
-  const overallPct = 88;
+  const overallPct = attendance.length > 0
+    ? Math.round((attendance.filter((a: any) => a.status === 'present' || a.status === 'late').length / attendance.length) * 100)
+    : 0;
 
   const pendingAssignments = assignments.filter((a: any) => {
     const dueDate = a.dueDate || a.due_date;
@@ -58,8 +66,8 @@ export function StudentDashboard() {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
         <DashboardCard title="Overall Attendance" value={`${overallPct}%`} icon={CalendarCheck}
-          colorClass={overallPct >= 75 ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30' : 'bg-red-50 text-red-600'}
-          subtitle={overallPct >= 75 ? 'Good standing' : 'Below threshold!'} trend="+2% this month" trendUp={true} />
+          colorClass={attendance.length === 0 ? 'bg-slate-50 text-slate-500 dark:bg-slate-800' : overallPct >= 75 ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30' : 'bg-red-50 text-red-600'}
+          subtitle={attendance.length === 0 ? 'No records yet' : overallPct >= 75 ? 'Good standing' : 'Below threshold!'} />
         <DashboardCard title="Pending Assignments" value={pendingAssignments} icon={ClipboardList} colorClass="bg-amber-50 text-amber-600 dark:bg-amber-900/30" subtitle="Due soon" trend="Active" trendUp={false} />
         <DashboardCard title="Fees Due" value={`₹${pendingFees.toLocaleString('en-IN')}`} icon={CreditCard} colorClass="bg-blue-50 text-blue-600 dark:bg-blue-900/30" subtitle="Pay before due date" />
         <DashboardCard title="Active Notices" value={notices.length} icon={Bell} colorClass="bg-violet-50 text-violet-600 dark:bg-violet-900/30" subtitle="Latest updates" />
@@ -112,8 +120,8 @@ export function StudentDashboard() {
                 <p className="text-xs text-slate-400 mt-0.5">Threshold requirement is 75%</p>
               </div>
               <div className="text-right">
-                <span className="text-lg font-bold text-emerald-600">88%</span>
-                <p className="text-xs text-slate-400">Safe Zone</p>
+                <span className={`text-lg font-bold ${attendance.length === 0 ? 'text-slate-400' : overallPct >= 75 ? 'text-emerald-600' : 'text-amber-600'}`}>{overallPct}%</span>
+                <p className="text-xs text-slate-400">{attendance.length === 0 ? 'No records' : overallPct >= 75 ? 'Safe Zone' : 'Needs Attention'}</p>
               </div>
             </div>
           </div>

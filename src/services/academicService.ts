@@ -1,29 +1,9 @@
 import { Department, Subject, TimetableSlot } from '../types';
 import { FirestoreCollection } from './dbHelper';
 
-const INITIAL_DEPARTMENTS: Department[] = [
-  { id: 'dept-1', name: 'Computer Science & Engineering', code: 'CSE', hod: 'Dr. Priya Mehta', totalStudents: 240, totalFaculty: 18 },
-  { id: 'dept-2', name: 'Information Technology', code: 'IT', hod: 'Dr. Rajesh Verma', totalStudents: 180, totalFaculty: 14 },
-  { id: 'dept-3', name: 'Electronics & Communication', code: 'ECE', hod: 'Dr. Neha Gupta', totalStudents: 120, totalFaculty: 10 },
-  { id: 'dept-4', name: 'Mechanical Engineering', code: 'ME', hod: 'Dr. Arun Kumar', totalStudents: 90, totalFaculty: 8 },
-];
-
-const INITIAL_SUBJECTS: Subject[] = [
-  { id: 'sub-1', name: 'Data Structures & Algorithms', code: 'CS301', credits: 4, department: 'Computer Science & Engineering', semester: 3, facultyId: 'fac-1', facultyName: 'Prof. Suraj Sharma' },
-  { id: 'sub-2', name: 'Database Management Systems', code: 'CS302', credits: 4, department: 'Computer Science & Engineering', semester: 4, facultyId: 'fac-2', facultyName: 'Dr. Priya Mehta' },
-  { id: 'sub-3', name: 'Computer Networks', code: 'IT401', credits: 3, department: 'Information Technology', semester: 4, facultyId: 'fac-3', facultyName: 'Prof. Rajesh Verma' },
-  { id: 'sub-4', name: 'Operating Systems', code: 'CS303', credits: 4, department: 'Computer Science & Engineering', semester: 4, facultyId: 'fac-1', facultyName: 'Prof. Suraj Sharma' },
-  { id: 'sub-5', name: 'Cloud Computing & DevOps', code: 'CS501', credits: 3, department: 'Computer Science & Engineering', semester: 5, facultyId: 'fac-2', facultyName: 'Dr. Priya Mehta' },
-];
-
-const INITIAL_TIMETABLE: TimetableSlot[] = [
-  { id: 'tt-1', day: 'Monday', startTime: '09:00', endTime: '10:00', subjectId: 'sub-1', subjectName: 'Data Structures & Algorithms', facultyName: 'Prof. Suraj Sharma', room: 'Lab 3', department: 'Computer Science', semester: 6 },
-  { id: 'tt-2', day: 'Monday', startTime: '10:15', endTime: '11:15', subjectId: 'sub-2', subjectName: 'Database Management Systems', facultyName: 'Dr. Priya Mehta', room: 'Room 204', department: 'Computer Science', semester: 6 },
-  { id: 'tt-3', day: 'Tuesday', startTime: '09:00', endTime: '10:00', subjectId: 'sub-4', subjectName: 'Operating Systems', facultyName: 'Prof. Suraj Sharma', room: 'Room 105', department: 'Computer Science', semester: 6 },
-  { id: 'tt-4', day: 'Wednesday', startTime: '11:30', endTime: '12:30', subjectId: 'sub-5', subjectName: 'Cloud Computing', facultyName: 'Dr. Priya Mehta', room: 'Lab 1', department: 'Computer Science', semester: 6 },
-  { id: 'tt-5', day: 'Thursday', startTime: '14:00', endTime: '15:00', subjectId: 'sub-3', subjectName: 'Computer Networks', facultyName: 'Prof. Rajesh Verma', room: 'Room 302', department: 'Computer Science', semester: 6 },
-  { id: 'tt-6', day: 'Friday', startTime: '10:00', endTime: '11:00', subjectId: 'sub-1', subjectName: 'Data Structures & Algorithms', facultyName: 'Prof. Suraj Sharma', room: 'Lab 3', department: 'Computer Science', semester: 6 },
-];
+const INITIAL_DEPARTMENTS: Department[] = [];
+const INITIAL_SUBJECTS: Subject[] = [];
+const INITIAL_TIMETABLE: TimetableSlot[] = [];
 
 const deptStore = new FirestoreCollection<Department>('departments', INITIAL_DEPARTMENTS);
 const subjectStore = new FirestoreCollection<Subject>('subjects', INITIAL_SUBJECTS);

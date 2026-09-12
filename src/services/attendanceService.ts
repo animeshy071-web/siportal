@@ -1,13 +1,7 @@
 import { AttendanceRecord, SubjectAttendance } from '../types';
 import { FirestoreCollection } from './dbHelper';
 
-const INITIAL_ATTENDANCE: AttendanceRecord[] = [
-  { id: 'att-1', studentId: 'std-1', subjectId: 'sub-1', subjectName: 'Data Structures & Algorithms', date: '2026-08-10', status: 'present' },
-  { id: 'att-2', studentId: 'std-1', subjectId: 'sub-2', subjectName: 'Database Management Systems', date: '2026-08-10', status: 'present' },
-  { id: 'att-3', studentId: 'std-1', subjectId: 'sub-3', subjectName: 'Computer Networks', date: '2026-08-11', status: 'absent' },
-  { id: 'att-4', studentId: 'std-1', subjectId: 'sub-4', subjectName: 'Operating Systems', date: '2026-08-11', status: 'present' },
-  { id: 'att-5', studentId: 'std-1', subjectId: 'sub-5', subjectName: 'Cloud Computing', date: '2026-08-12', status: 'present' },
-];
+const INITIAL_ATTENDANCE: AttendanceRecord[] = [];
 
 const attendanceStore = new FirestoreCollection<AttendanceRecord>('attendance', INITIAL_ATTENDANCE);
 

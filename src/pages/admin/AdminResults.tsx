@@ -49,13 +49,28 @@ export function AdminResults() {
     return (s.department === department || department.includes(s.department) || s.department.includes(department)) && Number(s.semester) === parseInt(semester);
   });
 
-  const subjectStats = (relevantSubjects.length > 0 ? relevantSubjects : subjects.slice(0, 4)).map((sub: any) => {
+  const subjectStats = relevantSubjects.map((sub: any) => {
+    const subResults = results.filter((r: any) => r.subjectId === sub.id || r.subject_id === sub.id);
+    const count = subResults.length;
+    const avgInternal = count > 0 
+      ? Math.round(subResults.reduce((sum: number, r: any) => sum + (r.internalMarks ?? r.internal_marks ?? 0), 0) / count)
+      : null;
+    const avgExternal = count > 0
+      ? Math.round(subResults.reduce((sum: number, r: any) => sum + (r.externalMarks ?? r.external_marks ?? 0), 0) / count)
+      : null;
+    const passed = subResults.filter((r: any) => {
+      const total = (r.internalMarks ?? r.internal_marks ?? 0) + (r.practicalMarks ?? r.practical_marks ?? 0) + (r.externalMarks ?? r.external_marks ?? 0);
+      return total >= 40;
+    }).length;
+    const passRate = count > 0 ? Math.round((passed / count) * 100) : null;
+    const isPublished = subResults.some((r: any) => r.published);
+
     return {
       ...sub,
-      avgInternal: 32,
-      avgExternal: 68,
-      passRate: 94,
-      published: true
+      avgInternal,
+      avgExternal,
+      passRate,
+      published: isPublished
     };
   });
 
@@ -109,12 +124,16 @@ export function AdminResults() {
               ) : subjectStats.map((sub: any) => (
                 <tr key={sub.id} className="table-row">
                   <td className="table-cell font-medium">{sub.name}</td>
-                  <td className="table-cell text-center">{sub.avgInternal} / 40</td>
-                  <td className="table-cell text-center">{sub.avgExternal} / 80</td>
+                  <td className="table-cell text-center">{sub.avgInternal !== null ? `${sub.avgInternal} / 40` : '—'}</td>
+                  <td className="table-cell text-center">{sub.avgExternal !== null ? `${sub.avgExternal} / 80` : '—'}</td>
                   <td className="table-cell text-center">
-                    <span className={`font-semibold ${sub.passRate >= 80 ? 'text-emerald-600' : sub.passRate >= 60 ? 'text-amber-600' : 'text-red-600'}`}>
-                      {sub.passRate}%
-                    </span>
+                    {sub.passRate !== null ? (
+                      <span className={`font-semibold ${sub.passRate >= 80 ? 'text-emerald-600' : sub.passRate >= 60 ? 'text-amber-600' : 'text-red-600'}`}>
+                        {sub.passRate}%
+                      </span>
+                    ) : (
+                      <span className="text-slate-400 font-normal">—</span>
+                    )}
                   </td>
                   <td className="table-cell text-center">
                     <StatusBadge status={sub.published ? 'paid' : 'pending'} />

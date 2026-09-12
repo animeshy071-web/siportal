@@ -4,12 +4,6 @@ import { Mail, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import DarkVeil from './DarkVeil';
 
-const QUICK_LOGINS = [
-  { label: 'Student', email: 'rishita@sis.edu', password: 'student123' },
-  { label: 'Faculty', email: 'suraj@sis.edu', password: 'faculty123' },
-  { label: 'Admin', email: 'admin@sis.edu', password: 'admin123' },
-];
-
 export function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -129,21 +123,6 @@ export function Login() {
               {loading ? 'Signing in...' : 'Login'}
             </button>
           </form>
-
-          {/* Quick Login Buttons */}
-          <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Quick Fill:</span>
-            {QUICK_LOGINS.map(q => (
-              <button
-                key={q.label}
-                type="button"
-                onClick={() => { setEmail(q.email); setPassword(q.password); }}
-                className="px-3 py-1 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold transition-colors"
-              >
-                {q.label}
-              </button>
-            ))}
-          </div>
         </div>
 
 

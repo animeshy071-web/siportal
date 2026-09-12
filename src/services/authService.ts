@@ -44,7 +44,7 @@ export const authService = {
       // Default fallback if user doc not yet created
       let role: Role = 'student';
       if (email.includes('admin')) role = 'admin';
-      else if (email.includes('faculty') || email.includes('suraj') || email.includes('prof')) role = 'faculty';
+      else if (email.includes('faculty') || email.includes('prof') || email.includes('teacher')) role = 'faculty';
 
       const newUser: User = {
         id: fbUser.uid,
@@ -60,25 +60,21 @@ export const authService = {
     } catch (error: any) {
       console.warn("Firebase direct login failed, checking fallback:", error?.message);
       
-      // Demo credentials fallback for seamless local/testing workflows
+      // Local fallback for offline/testing environments
       const lower = email.toLowerCase();
       let role: Role = 'student';
-      let name = 'Student User';
-      
-      if (lower.includes('admin') || password === 'admin123') {
+      if (lower.includes('admin')) {
         role = 'admin';
-        name = 'Super Admin';
-      } else if (lower.includes('faculty') || lower.includes('suraj') || password === 'faculty123') {
+      } else if (lower.includes('faculty') || lower.includes('prof') || lower.includes('teacher')) {
         role = 'faculty';
-        name = 'Prof. Suraj Sharma';
-      } else {
-        role = 'student';
-        name = 'Rishita Yadav';
       }
+
+      const rawName = email.split('@')[0].replace(/[._-]/g, ' ');
+      const name = rawName.charAt(0).toUpperCase() + rawName.slice(1);
 
       const demoUser: User = {
         id: 'user-' + Math.random().toString(36).substring(2, 9),
-        name,
+        name: name || 'User',
         email,
         role
       };

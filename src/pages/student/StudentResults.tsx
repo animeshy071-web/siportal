@@ -28,16 +28,7 @@ export function StudentResults() {
     queryFn: () => academicService.getSubjects()
   });
 
-  const publishedMarks = results.length > 0 ? results : subjectsList.map((s: any, idx: number) => ({
-    id: `sample-${s.id}`,
-    studentId: user?.id,
-    subjectId: s.id,
-    subjectName: s.name,
-    internalMarks: 32 + (idx % 8),
-    practicalMarks: 20 + (idx % 5),
-    externalMarks: 28 + (idx % 7),
-    published: true
-  }));
+  const publishedMarks = results;
 
   const subjects = publishedMarks.map((r: any) => {
     const sub = subjectsList.find((s: any) => s.id === r.subjectId || s.id === r.subject_id);

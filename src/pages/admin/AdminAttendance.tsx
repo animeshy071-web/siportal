@@ -31,7 +31,7 @@ export function AdminAttendance() {
     const records = attendanceRecords.filter((a: any) => a.subjectId === sub.id || a.subject_id === sub.id);
     const total = records.length;
     const present = records.filter((a: any) => a.status === 'present').length;
-    const percentage = total > 0 ? Math.round((present / total) * 100) : 85;
+    const percentage = total > 0 ? Math.round((present / total) * 100) : 0;
     return {
       subjectId: sub.id,
       subjectName: sub.name,
@@ -59,10 +59,10 @@ export function AdminAttendance() {
     <div className="space-y-6 animate-fade-in">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Attendance Reports</h1>
-          <p className="page-subtitle">Monitor college-wide attendance metrics</p>
+          <h1 className="page-title">Attendance Management</h1>
+          <p className="page-subtitle">Department-wide attendance tracking and defaulter reports</p>
         </div>
-        <SearchBar value={search} onChange={setSearch} placeholder="Search subject..." />
+        <SearchBar value={search} onChange={setSearch} placeholder="Filter by subject name..." />
       </div>
 
       <div className="card p-0">
@@ -78,10 +78,17 @@ export function AdminAttendance() {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
-              {filtered.map((sa: any) => {
-                const sub = subjects.find((s: any) => s.id === sa.subjectId);
-                const fac = faculty.find((f: any) => f.id === sub?.facultyId || f.user_id === (sub as any)?.faculty_id);
-                return (
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-12 text-slate-400 text-sm">
+                    No subjects or attendance data found
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((sa: any) => {
+                  const sub = subjects.find((s: any) => s.id === sa.subjectId);
+                  const fac = faculty.find((f: any) => f.id === sub?.facultyId || f.user_id === (sub as any)?.faculty_id);
+                  return (
 
                   <tr key={sa.subjectId} className="table-row">
                     <td className="table-cell font-medium">{sa.subjectName}</td>
@@ -98,7 +105,7 @@ export function AdminAttendance() {
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>
