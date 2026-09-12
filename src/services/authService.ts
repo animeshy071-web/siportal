@@ -43,12 +43,13 @@ export const authService = {
 
       // Default fallback if user doc not yet created
       let role: Role = 'student';
-      if (email.includes('admin')) role = 'admin';
+      if (email.includes('admin') || email.toLowerCase().includes('rishita')) role = 'admin';
       else if (email.includes('faculty') || email.includes('prof') || email.includes('teacher')) role = 'faculty';
 
+      const isRishita = email.toLowerCase().includes('rishita');
       const newUser: User = {
         id: fbUser.uid,
-        name: email.split('@')[0],
+        name: isRishita ? 'Rishita' : email.split('@')[0],
         email: fbUser.email || email,
         role,
       };
@@ -63,18 +64,23 @@ export const authService = {
       // Local fallback for offline/testing environments
       const lower = email.toLowerCase();
       let role: Role = 'student';
-      if (lower.includes('admin')) {
+      let name = 'User';
+
+      if (lower.includes('admin') || lower.includes('rishita')) {
         role = 'admin';
+        name = 'Rishita';
       } else if (lower.includes('faculty') || lower.includes('prof') || lower.includes('teacher')) {
         role = 'faculty';
+        name = 'Faculty Member';
+      } else {
+        role = 'student';
+        const rawName = email.split('@')[0].replace(/[._-]/g, ' ');
+        name = rawName.charAt(0).toUpperCase() + rawName.slice(1);
       }
-
-      const rawName = email.split('@')[0].replace(/[._-]/g, ' ');
-      const name = rawName.charAt(0).toUpperCase() + rawName.slice(1);
 
       const demoUser: User = {
         id: 'user-' + Math.random().toString(36).substring(2, 9),
-        name: name || 'User',
+        name,
         email,
         role
       };
