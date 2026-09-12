@@ -35,7 +35,7 @@ export function AdminResults() {
 
   const publishMutation = useMutation({
     mutationFn: async () => {
-      // mark results as published in Firestore
+      await operationService.publishResults();
       return true;
     },
     onSuccess: () => {

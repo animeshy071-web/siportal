@@ -50,12 +50,10 @@ export function AdminFees() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (_id: string) => {
-      // update status to deleted or remove
-      queryClient.invalidateQueries({ queryKey: ['fees'] });
-    },
+    mutationFn: (id: string) => operationService.deleteFee(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fees'] });
+      setConfirmDelete(null);
     }
   });
 

@@ -39,12 +39,16 @@ export function AdminStudents() {
     mutationFn: (newStudent: any) => studentService.createStudent(newStudent),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['adminStudents'] });
+      queryClient.invalidateQueries({ queryKey: ['facultyStudents'] });
       setNewCredentials({
         email: data.email,
         password: 'student123',
         id: data.id,
       });
       setModal(null);
+    },
+    onError: (err: any) => {
+      alert(err.message || 'Failed to add student');
     }
   });
 
@@ -55,7 +59,11 @@ export function AdminStudents() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminStudents'] });
+      queryClient.invalidateQueries({ queryKey: ['facultyStudents'] });
       setModal(null);
+    },
+    onError: (err: any) => {
+      alert(err.message || 'Failed to update student');
     }
   });
 
@@ -63,6 +71,11 @@ export function AdminStudents() {
     mutationFn: (id: string) => studentService.deleteStudent(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminStudents'] });
+      queryClient.invalidateQueries({ queryKey: ['facultyStudents'] });
+      setConfirmDelete(null);
+    },
+    onError: (err: any) => {
+      alert(err.message || 'Failed to delete student');
     }
   });
 
@@ -117,6 +130,8 @@ export function AdminStudents() {
   const openView = (s: any) => { setSelected(s); setModal('view'); };
 
   const handleSave = () => {
+    if (!form.name.trim()) { alert('Please enter student name.'); return; }
+    if (!form.email.trim()) { alert('Please enter student email.'); return; }
     if (modal === 'add') {
       createMutation.mutate(form);
     }

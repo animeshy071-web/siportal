@@ -31,6 +31,7 @@ def create_student(db: Session, student_data: StudentCreate) -> StudentCreatedRe
     db.add(new_user)
     
     profile_data = student_data.model_dump()
+    profile_data.pop('email', None)
     profile_data['user_id'] = user_id
     new_profile = StudentProfile(**profile_data)
     db.add(new_profile)
@@ -54,7 +55,7 @@ def create_faculty(db: Session, faculty_data: FacultyCreate) -> FacultyCreatedRe
     username = generate_faculty_username(faculty_data.name)
     
     while db.query(User).filter(User.username == username).first():
-        username = generate_faculty_username(faculty_data.name)
+        username = generate_faculty_username(faculty_data.name) + generate_uuid()[:4]
 
     user_id = generate_uuid()
     new_user = User(
@@ -67,6 +68,7 @@ def create_faculty(db: Session, faculty_data: FacultyCreate) -> FacultyCreatedRe
     db.add(new_user)
     
     profile_data = faculty_data.model_dump()
+    profile_data.pop('email', None)
     profile_data['user_id'] = user_id
     new_profile = FacultyProfile(**profile_data)
     db.add(new_profile)

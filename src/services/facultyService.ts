@@ -1,6 +1,7 @@
 import { Faculty } from '../types';
 import { authService } from './authService';
 import { FirestoreCollection } from './dbHelper';
+import api from './api';
 
 const INITIAL_FACULTY: Faculty[] = [];
 
@@ -8,7 +9,29 @@ const collectionStore = new FirestoreCollection<Faculty>('faculty', INITIAL_FACU
 
 export const facultyService = {
   async getFaculty(): Promise<Faculty[]> {
-    return collectionStore.getAll();
+    const local = await collectionStore.getAll();
+    // Silent background sync with FastAPI backend if available
+    api.get<any[]>('/admin/faculty')
+      .then(res => {
+        if (Array.isArray(res.data) && res.data.length > 0) {
+          res.data.forEach((f: any) => {
+            const mapped: Faculty = {
+              id: f.user_id || f.id,
+              name: f.name,
+              email: f.email,
+              phone: f.phone || '',
+              department: f.department || '',
+              designation: f.designation || '',
+              experience: f.experience || '',
+              avatar: f.avatar || '',
+              subjects: f.subjects || ['Computer Fundamentals']
+            };
+            collectionStore.add(mapped);
+          });
+        }
+      })
+      .catch(() => { /* offline / backend not running */ });
+    return local;
   },
 
   async getFacultyById(id: string): Promise<Faculty | null> {
@@ -33,18 +56,34 @@ export const facultyService = {
       department: data.department || 'Computer Science',
       designation: data.designation || 'Assistant Professor',
       experience: data.experience || '2 Years',
-      subjects: data.subjects || ['Computer Fundamentals'],
+      subjects: data.subjects && data.subjects.length > 0 ? data.subjects : ['Computer Fundamentals'],
       avatar: data.avatar || ''
     };
 
-    return collectionStore.add(newFaculty);
+    // 1. Instant local persistence
+    const saved = await collectionStore.add(newFaculty);
+
+    // 2. Background sync with backend if running
+    api.post('/admin/faculty', {
+      name: newFaculty.name,
+      email: newFaculty.email,
+      phone: newFaculty.phone,
+      department: newFaculty.department,
+      designation: newFaculty.designation,
+      experience: newFaculty.experience
+    }).catch(() => { /* backend offline or standalone */ });
+
+    return saved;
   },
 
   async updateFaculty(id: string, data: Partial<Faculty>): Promise<Faculty> {
-    return collectionStore.update(id, data);
+    const res = await collectionStore.update(id, data);
+    api.put(`/admin/faculty/${id}`, data).catch(() => {});
+    return res;
   },
 
   async deleteFaculty(id: string): Promise<void> {
-    return collectionStore.remove(id);
+    await collectionStore.remove(id);
+    api.delete(`/admin/faculty/${id}`).catch(() => {});
   }
 };

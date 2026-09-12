@@ -22,6 +22,10 @@ class StudentProfile(Base):
 
     user = relationship("User", backref="student_profile")
 
+    @property
+    def email(self) -> str:
+        return self.user.email if self.user else ""
+
 class FacultyProfile(Base):
     __tablename__ = "faculty_profiles"
 
@@ -35,6 +39,10 @@ class FacultyProfile(Base):
     
     user = relationship("User", backref="faculty_profile")
 
+    @property
+    def email(self) -> str:
+        return self.user.email if self.user else ""
+
 class AdminProfile(Base):
     __tablename__ = "admin_profiles"
 
@@ -44,3 +52,7 @@ class AdminProfile(Base):
     avatar = Column(String)
 
     user = relationship("User", backref="admin_profile")
+
+    @property
+    def email(self) -> str:
+        return self.user.email if self.user else ""

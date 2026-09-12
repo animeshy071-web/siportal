@@ -39,12 +39,16 @@ export function AdminFaculty() {
     mutationFn: (newFaculty: any) => facultyService.createFaculty(newFaculty),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['adminFaculty'] });
+      queryClient.invalidateQueries({ queryKey: ['faculty'] });
       setNewCredentials({
         email: data.email,
         password: 'faculty123',
         id: data.id,
       });
       setModal(null);
+    },
+    onError: (err: any) => {
+      alert(err.message || 'Failed to add faculty member');
     }
   });
 
@@ -55,7 +59,11 @@ export function AdminFaculty() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminFaculty'] });
+      queryClient.invalidateQueries({ queryKey: ['faculty'] });
       setModal(null);
+    },
+    onError: (err: any) => {
+      alert(err.message || 'Failed to update faculty member');
     }
   });
 
@@ -63,6 +71,11 @@ export function AdminFaculty() {
     mutationFn: (id: string) => facultyService.deleteFaculty(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminFaculty'] });
+      queryClient.invalidateQueries({ queryKey: ['faculty'] });
+      setConfirmDelete(null);
+    },
+    onError: (err: any) => {
+      alert(err.message || 'Failed to delete faculty member');
     }
   });
 
@@ -118,6 +131,8 @@ export function AdminFaculty() {
   };
 
   const handleSave = () => {
+    if (!form.name.trim()) { alert('Please enter faculty name.'); return; }
+    if (!form.email.trim()) { alert('Please enter faculty email.'); return; }
     if (modal === 'add') {
       createMutation.mutate(form);
     }

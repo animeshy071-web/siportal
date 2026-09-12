@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { studentService } from '../../services/studentService';
 import { facultyService } from '../../services/facultyService';
 import { operationService } from '../../services/operationService';
+import { attendanceService } from '../../services/attendanceService';
 import { FileText, Download, Loader2 } from 'lucide-react';
 
 export function AdminReports() {
@@ -20,7 +22,28 @@ export function AdminReports() {
     queryFn: () => operationService.getFees()
   });
 
-  const attendance75: any[] = [];
+  const { data: attendance = [] } = useQuery({
+    queryKey: ['attendance'],
+    queryFn: () => attendanceService.getAttendance()
+  });
+
+  const attendance75 = useMemo(() => {
+    const map = new Map<string, { subjectId: string; subjectName: string; total: number; present: number }>();
+    attendance.forEach((a: any) => {
+      const subId = a.subjectId || a.subject_id;
+      if (!subId) return;
+      if (!map.has(subId)) {
+        map.set(subId, { subjectId: subId, subjectName: a.subjectName || a.subject_name || 'Subject', total: 0, present: 0 });
+      }
+      const entry = map.get(subId)!;
+      entry.total++;
+      if (a.status === 'present' || a.status === 'late') entry.present++;
+    });
+    return Array.from(map.values())
+      .map(e => ({ ...e, percentage: e.total > 0 ? Math.round((e.present / e.total) * 100) : 0 }))
+      .filter(e => e.total > 0 && e.percentage < 75);
+  }, [attendance]);
+
   const feeDefaulters = fees.filter((f: any) => f.status !== 'paid');
 
   const generateCSV = (headers: string[], rows: string[][]): void => {

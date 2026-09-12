@@ -32,6 +32,10 @@ export const operationService = {
     return noticeStore.add(notice);
   },
 
+  async updateNotice(id: string, data: Partial<Notice>): Promise<Notice> {
+    return noticeStore.update(id, data);
+  },
+
   async deleteNotice(id: string): Promise<void> {
     return noticeStore.remove(id);
   },
@@ -66,6 +70,9 @@ export const operationService = {
     });
   },
 
+  async deleteFee(id: string): Promise<void> {
+    return feeStore.remove(id);
+  },
 
   // ─── Results / Marks ───
   async getResults(studentId?: string): Promise<any[]> {
@@ -80,6 +87,15 @@ export const operationService = {
       ...data,
       updatedAt: new Date().toISOString()
     });
+  },
+
+  async publishResults(subjectId?: string): Promise<void> {
+    const all = await resultStore.getAll();
+    for (const r of all) {
+      if (!subjectId || r.subjectId === subjectId || r.subject_id === subjectId) {
+        await resultStore.update(r.id, { published: true });
+      }
+    }
   },
 
   // ─── Leave Applications ───

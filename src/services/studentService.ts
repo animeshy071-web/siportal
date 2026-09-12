@@ -1,6 +1,7 @@
 import { Student } from '../types';
 import { authService } from './authService';
 import { FirestoreCollection } from './dbHelper';
+import api from './api';
 
 const INITIAL_STUDENTS: Student[] = [];
 
@@ -8,7 +9,35 @@ const collectionStore = new FirestoreCollection<Student>('students', INITIAL_STU
 
 export const studentService = {
   async getStudents(): Promise<Student[]> {
-    return collectionStore.getAll();
+    const local = await collectionStore.getAll();
+    // Silent background sync with FastAPI backend if available
+    api.get<any[]>('/admin/students')
+      .then(res => {
+        if (Array.isArray(res.data) && res.data.length > 0) {
+          res.data.forEach((s: any) => {
+            const mapped: Student = {
+              id: s.user_id || s.id,
+              name: s.name,
+              email: s.email,
+              rollNo: s.roll_no || s.rollNo || '',
+              phone: s.phone || '',
+              department: s.department || '',
+              semester: Number(s.semester) || 1,
+              section: s.section || 'A',
+              batch: s.batch || '2024-2028',
+              dob: s.dob || '',
+              gender: s.gender || 'Male',
+              address: s.address || '',
+              parentName: s.parent_name || s.parentName || '',
+              parentPhone: s.parent_phone || s.parentPhone || '',
+              avatar: s.avatar || ''
+            };
+            collectionStore.add(mapped);
+          });
+        }
+      })
+      .catch(() => { /* offline / backend not running */ });
+    return local;
   },
 
   async getStudentById(id: string): Promise<Student | null> {
@@ -43,14 +72,42 @@ export const studentService = {
       avatar: data.avatar || ''
     };
 
-    return collectionStore.add(newStudent);
+    // 1. Instant local persistence
+    const saved = await collectionStore.add(newStudent);
+
+    // 2. Background sync with backend if running
+    api.post('/admin/students', {
+      name: newStudent.name,
+      email: newStudent.email,
+      roll_no: newStudent.rollNo,
+      phone: newStudent.phone,
+      department: newStudent.department,
+      semester: newStudent.semester,
+      section: newStudent.section,
+      batch: newStudent.batch,
+      dob: newStudent.dob,
+      gender: newStudent.gender,
+      address: newStudent.address,
+      parent_name: newStudent.parentName,
+      parent_phone: newStudent.parentPhone
+    }).catch(() => { /* backend offline or standalone */ });
+
+    return saved;
   },
 
   async updateStudent(id: string, data: Partial<Student>): Promise<Student> {
-    return collectionStore.update(id, data);
+    const res = await collectionStore.update(id, data);
+    api.put(`/admin/students/${id}`, {
+      ...data,
+      roll_no: data.rollNo,
+      parent_name: data.parentName,
+      parent_phone: data.parentPhone
+    }).catch(() => {});
+    return res;
   },
 
   async deleteStudent(id: string): Promise<void> {
-    return collectionStore.remove(id);
+    await collectionStore.remove(id);
+    api.delete(`/admin/students/${id}`).catch(() => {});
   }
 };

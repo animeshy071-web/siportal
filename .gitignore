@@ -36,3 +36,6 @@ backend/**/__pycache__/
 .env
 .env.local
 .env.production
+
+# Firebase CLI cache
+.firebase/
